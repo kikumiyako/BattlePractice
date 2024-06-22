@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class BattlePractice {
@@ -6,17 +9,19 @@ public class BattlePractice {
     public static void main(String[] args) {
 
         Player player = new Player();
+        player.startGame();
 
         while (player.getWinPoint() < PLAY_COUNT) {
-            Opponent opponent = Opponent.getInstance(new Random().nextInt(3));
+            Opponent opponent = Opponent.getInstance();
             opponent.showUp();
             if (player.winTheBattle()) {
                 player.win(opponent);
             } else {
                 player.lose(opponent);
             }
-            player.ShowStatus();
+            player.showStatus();
         }
+
         player.endGame();
     }
 }
@@ -59,8 +64,12 @@ class Player {
         System.out.printf("Player lose against %s!%n", opponent.getName());
     }
 
-    public void ShowStatus() {
-        System.out.printf("Player points are win [%s] and lose [%s]%n", this.getWinPoint(), this.getLosePoint());
+    public void showStatus() {
+        System.out.printf("Player points are here. win [%s], lose [%s]%n", this.getWinPoint(), this.getLosePoint());
+    }
+
+    public void startGame() {
+        System.out.println("Game Start!");
     }
 
     public void endGame() {
@@ -69,22 +78,25 @@ class Player {
 }
 
 class Opponent {
-    private String _name;
+    private String name;
+    private static final List<Opponent> opponents = Collections.unmodifiableList(new ArrayList<Opponent>() {
+        {
+            add(new Bob());
+            add(new Yamada());
+            add(new Mary());
+        }
+    });
 
-    protected void setName(String name) {
-        this._name = name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    protected String getName() {
-        return this._name;
+    public String getName() {
+        return this.name;
     }
 
-    public static Opponent getInstance(int opponentNumber) {
-        return switch (opponentNumber) {
-            case 0 -> new Bob();
-            case 1 -> new Yamada();
-            default -> new Mary();
-        };
+    public static Opponent getInstance() {
+        return opponents.get(new Random().nextInt(opponents.size()));
     }
 
     public void showUp() {
